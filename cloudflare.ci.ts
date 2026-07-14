@@ -2,7 +2,10 @@ import { CIWorkflow } from "@repo/ci";
 import type { CiParams, CiRunnerStep, WorkflowEvent } from "@repo/ci";
 
 export class CI extends CIWorkflow {
-	protected async pipeline(event: WorkflowEvent<CiParams>, step: CiRunnerStep): Promise<void> {
+	protected async pipeline(
+		event: WorkflowEvent<CiParams>,
+		step: CiRunnerStep,
+	): Promise<void> {
 		const p = event.payload;
 		const deps = await step.cache(["package-lock.json"]).runner("install", {
 			exec: "npm ci",
@@ -27,7 +30,9 @@ export class CI extends CIWorkflow {
 			}),
 		]);
 
-		const isBranchPush = p.trigger === "push" && !!p.branch && p.branch !== p.defaultBranch;
+		// comment here
+		const isBranchPush =
+			p.trigger === "push" && !!p.branch && p.branch !== p.defaultBranch;
 		if (p.trigger === "pull_request" || isBranchPush) {
 			const preview = await deps
 				.build({
