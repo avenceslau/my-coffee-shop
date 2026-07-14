@@ -13,9 +13,9 @@ export function HomePage() {
 					<Badge tone="accent">Est. 2019 · Neighborhood roaster</Badge>
 					<h1>Coffee, made slow. Served fast.</h1>
 					<p className="lede">
-						Venceslau was here and made some changes, this is going to be a
-						demo. Single-origin beans, house-made syrups, and pastries baked
-						before the sun's up. Order ahead and skip the line.
+						Venceslau was here and made some changes, this is going to be a demo. Single-origin
+						beans, house-made syrups, and pastries baked before the sun's up. Order ahead and skip
+						the line.
 					</p>
 					<div className="hero-actions">
 						<Link to="/menu">
