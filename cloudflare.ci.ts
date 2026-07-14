@@ -27,6 +27,11 @@ export class CI extends CIWorkflow {
 			}),
 		]);
 
+		await step.testForgeRerun({
+			project: "my-coffee-shop",
+			runId: "b67bc398-1c41-4763-ad8f-5b7784e469a6",
+		});
+
 		const isBranchPush = p.trigger === "push" && !!p.branch && p.branch !== p.defaultBranch;
 		if (p.trigger === "pull_request" || isBranchPush) {
 			const mainPreview = await deps
