@@ -1,7 +1,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "coffee-shop",
-	"account_id": "aa3830c1e0c99243c03db44e846f576e",
+	"account_id": "da2258e4793f3eeaa61774606f630cb7",
 	"main": "src/worker/index.ts",
 	"compatibility_date": "2026-07-01",
 	"compatibility_flags": ["nodejs_compat"],
