@@ -27,23 +27,22 @@ export class CI extends CIWorkflow {
 			}),
 		]);
 
-		await step.testForgeRerun({
-			project: "my-coffee-shop",
-			runId: "b67bc398-1c41-4763-ad8f-5b7784e469a6",
-		});
-
 		const isBranchPush = p.trigger === "push" && !!p.branch && p.branch !== p.defaultBranch;
 		if (p.trigger === "pull_request" || isBranchPush) {
-			const mainPreview = await deps
+			const preview = await deps
 				.build({
 					worker: "coffee-shop",
 					wrangler: "wrangler.jsonc",
 					packageManager: "npm",
 				})
 				.preview();
-			if (mainPreview.worker === "coffee-shop") {
-				// Non-gating visual regression against the branch preview; the baseline
-				// is the default branch. Add more entries to the catalog for other pages.
+			if (preview.worker === "coffee-shop") {
+				await step.testForge({
+					url: preview.url,
+					project: "my-coffee-shop",
+				});
+			}
+			if (preview.worker === "coffee-shop") {
 				await step.delta({
 					project: "coffee-shop",
 					baselineBranch: p.defaultBranch,
@@ -52,7 +51,7 @@ export class CI extends CIWorkflow {
 							id: "index",
 							title: "index",
 							name: "index",
-							url: mainPreview.url,
+							url: preview.url,
 						},
 					],
 				});
@@ -83,6 +82,11 @@ export class CI extends CIWorkflow {
 					url: "https://coffee-shop.avenceslau.workers.dev",
 				},
 			],
+		});
+
+		await step.testForgeRerun({
+			project: "my-coffee-shop",
+			runId: "002c1efc-196a-4e68-bf63-c60ac1a6f0f0",
 		});
 	}
 }
