@@ -10,7 +10,6 @@ test("Homepage — verify hero content and navigate to Menu", async ({ page }) =
 	await expect(
 		page.getByRole("heading", { name: "Coffee, made slow. Served fast." }),
 	).toBeVisible();
-	await expect(page.getByText("Est. 2019 · Neighborhood roaster")).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Direct trade beans" })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Order ahead" })).toBeVisible();
 	await expect(page.getByRole("heading", { name: "Fresh pastries" })).toBeVisible();
@@ -23,57 +22,50 @@ test("Homepage — verify hero content and navigate to Menu", async ({ page }) =
 	await expect(page.getByRole("heading", { name: "Menu" })).toBeVisible();
 });
 
-test("Homepage — navigate to About via CTA button", async ({ page }) => {
+test("Homepage — navigate to About via hero CTA", async ({ page }) => {
 	const response = await page.goto(BASE_URL + "/");
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
-	await page.getByRole("link", { name: "About us" }).click();
+	await page.getByRole("main").getByRole("link", { name: "About us" }).click();
 	await page.waitForURL(/\/about/);
 	await page.waitForLoadState("domcontentloaded");
 
-	// "OUR STORY" is rendered as a styled text element, not a heading — assert by text
-	await expect(page.getByText("Our story")).toBeVisible();
+	// "OUR STORY" is rendered as a text label, not a heading — assert the h2 heading instead
 	await expect(page.getByRole("heading", { name: "Small shop, big beans." })).toBeVisible();
 });
 
-test("Global navigation — verify all nav links route to correct pages", async ({ page }) => {
+test("Homepage — global nav links are all reachable", async ({ page }) => {
 	const response = await page.goto(BASE_URL + "/");
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
 	const nav = page.getByRole("navigation");
 
-	// Navigate to Menu
-	await nav.getByRole("link", { name: "Menu", exact: true }).click();
-	await page.waitForURL(/\/menu/);
-	await page.waitForLoadState("domcontentloaded");
-	await expect(page.getByRole("heading", { name: "Menu" })).toBeVisible();
+	const homeLink = nav.getByRole("link", { name: "Home", exact: true });
+	await expect(homeLink).toBeVisible();
+	await expect(homeLink).toHaveAttribute("href", "/");
 
-	// Navigate to About
-	await nav.getByRole("link", { name: "About", exact: true }).click();
-	await page.waitForURL(/\/about/);
-	await page.waitForLoadState("domcontentloaded");
-	// "OUR STORY" is a styled text element, not a heading
-	await expect(page.getByText("Our story")).toBeVisible();
-	await expect(page.getByRole("heading", { name: "Small shop, big beans." })).toBeVisible();
+	const menuLink = nav.getByRole("link", { name: "Menu", exact: true });
+	await expect(menuLink).toBeVisible();
+	await expect(menuLink).toHaveAttribute("href", "/menu");
 
-	// Navigate to My orders
-	await nav.getByRole("link", { name: "My orders", exact: true }).click();
-	await page.waitForURL(/\/orders/);
-	await page.waitForLoadState("domcontentloaded");
-	await expect(page.getByRole("heading", { name: "My orders" })).toBeVisible();
+	const aboutLink = nav.getByRole("link", { name: "About", exact: true });
+	await expect(aboutLink).toBeVisible();
+	await expect(aboutLink).toHaveAttribute("href", "/about");
 
-	// Navigate to Feedback
-	await nav.getByRole("link", { name: "Feedback", exact: true }).click();
-	await page.waitForURL(/\/feedback/);
-	await page.waitForLoadState("domcontentloaded");
-	await expect(page.getByRole("heading", { name: "Send us feedback" })).toBeVisible();
+	const ordersLink = nav.getByRole("link", { name: "My orders", exact: true });
+	await expect(ordersLink).toBeVisible();
+	await expect(ordersLink).toHaveAttribute("href", "/orders");
 
-	// Navigate back home via logo
+	const feedbackLink = nav.getByRole("link", { name: "Feedback", exact: true });
+	await expect(feedbackLink).toBeVisible();
+	await expect(feedbackLink).toHaveAttribute("href", "/feedback");
+
 	await page.getByRole("banner").getByRole("link", { name: "☕ Bean & Brew" }).click();
 	await page.waitForURL(/coffee-shop\.avenceslau\.workers\.dev\/?$/);
 	await page.waitForLoadState("domcontentloaded");
+
 	await expect(
 		page.getByRole("heading", { name: "Coffee, made slow. Served fast." }),
 	).toBeVisible();

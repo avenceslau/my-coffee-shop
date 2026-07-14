@@ -86,7 +86,7 @@ export class CI extends CIWorkflow {
 
 		await step.testForgeRerun({
 			project: "my-coffee-shop",
-			runId: "002c1efc-196a-4e68-bf63-c60ac1a6f0f0",
+			runId: "38e8db76-336e-48d8-b42c-099f961d80c2",
 		});
 	}
 }

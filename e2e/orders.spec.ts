@@ -1,30 +1,30 @@
 import { test, expect } from "@playwright/test";
 
-test("My Orders — empty state and redirect to Menu", async ({ page }) => {
+test("My Orders — empty state and redirect to menu", async ({ page }) => {
 	// Navigate to the My Orders page
 	const response = await page.goto("/orders");
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
-	// Verify the 'My orders' heading is visible
+	// Verify the 'My orders' page heading is visible
 	await expect(page.getByRole("heading", { name: "My orders", level: 2 })).toBeVisible();
 
-	// Verify the empty-state alert message is displayed
+	// Verify the empty-state alert text is displayed
 	const alert = page.getByRole("alert");
 	await expect(alert).toBeVisible();
 	await expect(alert).toContainText("No orders yet");
 	await expect(alert).toContainText("You haven't placed any orders in this browser.");
 
-	// Click the 'Start an order' link/button to go to the menu
+	// Verify the 'Start an order' link points to /menu before clicking
 	const startOrderLink = page.getByRole("link", { name: "Start an order" });
 	await expect(startOrderLink).toBeVisible();
-	await startOrderLink.click();
+	await expect(startOrderLink).toHaveAttribute("href", "/menu");
 
-	// Confirm navigation landed on the /menu page
+	// Click the 'Start an order' link and confirm navigation to the Menu page
+	await startOrderLink.click();
 	await page.waitForURL(/\/menu/);
 	await page.waitForLoadState("domcontentloaded");
-	expect(page.url()).toContain("/menu");
 
-	// Verify the Menu heading is present on the destination page
+	// Confirm navigation landed on the Menu page
 	await expect(page.getByRole("heading", { name: "Menu" })).toBeVisible();
 });

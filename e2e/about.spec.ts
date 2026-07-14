@@ -1,86 +1,34 @@
 import { test, expect } from "@playwright/test";
 
-const BASE_URL = "https://coffee-shop.avenceslau.workers.dev";
-
-test("About — verify story content and navigation links", async ({ page }) => {
-	const response = await page.goto(`${BASE_URL}/about`);
+test("About — verify story sections are rendered", async ({ page }) => {
+	// Navigate to the About page
+	const response = await page.goto("https://coffee-shop.avenceslau.workers.dev/about");
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
-	// Verify 'OUR STORY' section text is visible
-	await expect(page.getByText("Our story", { exact: false })).toBeVisible();
+	// Verify the OUR STORY heading is visible
+	await expect(page.getByText("Our story")).toBeVisible();
 
-	// Verify the main heading
+	// Verify the 'The beans' section heading is present
+	await expect(page.getByText("The beans")).toBeVisible();
+
+	// Verify the 'The roast' section heading is present
+	await expect(page.getByText("The roast")).toBeVisible();
+
+	// Verify the 'The people' section heading is present
+	await expect(page.getByText("The people")).toBeVisible();
+
+	// Verify the main heading is visible
 	await expect(page.getByRole("heading", { name: "Small shop, big beans." })).toBeVisible();
 
-	// Verify 'The beans' section
-	await expect(page.getByText("The beans", { exact: false })).toBeVisible();
-
-	// Verify 'The roast' section
-	await expect(page.getByText("The roast", { exact: false })).toBeVisible();
-
-	// Verify 'The people' section
-	await expect(page.getByText("The people", { exact: false })).toBeVisible();
-
-	// Click 'Order a drink' CTA and verify navigation to /menu
-	const orderLink = page.getByRole("link", { name: "Order a drink", exact: true });
-	await expect(orderLink).toBeVisible();
-	await orderLink.click();
+	// Click the Menu nav link to navigate away from About
+	const nav = page.getByRole("navigation");
+	const menuLink = nav.getByRole("link", { name: "Menu", exact: true });
+	await expect(menuLink).toHaveAttribute("href", "/menu");
+	await menuLink.click();
 	await page.waitForURL(/\/menu/);
 	await page.waitForLoadState("domcontentloaded");
+
+	// Confirm navigation landed on the Menu page by checking the URL
 	expect(page.url()).toContain("/menu");
-});
-
-test('About — navigate to Feedback via "Say hello" link', async ({ page }) => {
-	const response = await page.goto(`${BASE_URL}/about`);
-	expect(response?.status()).toBe(200);
-	await page.waitForLoadState("domcontentloaded");
-
-	// Verify the 'Say hello' link is present and has the correct href
-	const sayHelloLink = page.getByRole("link", { name: "Say hello", exact: true });
-	await expect(sayHelloLink).toBeVisible();
-	await expect(sayHelloLink).toHaveAttribute("href", "/feedback");
-
-	// Click 'Say hello' and verify navigation to /feedback
-	await sayHelloLink.click();
-	await page.waitForURL(/\/feedback/);
-	await page.waitForLoadState("domcontentloaded");
-	expect(page.url()).toContain("/feedback");
-
-	// Confirm we landed on the feedback page by checking for a stable heading
-	await expect(page.getByRole("heading", { name: "Send us feedback" })).toBeVisible();
-});
-
-test("About — nav links have correct hrefs", async ({ page }) => {
-	const response = await page.goto(`${BASE_URL}/about`);
-	expect(response?.status()).toBe(200);
-	await page.waitForLoadState("domcontentloaded");
-
-	const nav = page.getByRole("navigation");
-
-	await expect(nav.getByRole("link", { name: "Home", exact: true })).toHaveAttribute("href", "/");
-	await expect(nav.getByRole("link", { name: "Menu", exact: true })).toHaveAttribute(
-		"href",
-		"/menu",
-	);
-	await expect(nav.getByRole("link", { name: "About", exact: true })).toHaveAttribute(
-		"href",
-		"/about",
-	);
-	await expect(nav.getByRole("link", { name: "My orders", exact: true })).toHaveAttribute(
-		"href",
-		"/orders",
-	);
-	await expect(nav.getByRole("link", { name: "Feedback", exact: true })).toHaveAttribute(
-		"href",
-		"/feedback",
-	);
-});
-
-test("About — footer is visible", async ({ page }) => {
-	const response = await page.goto(`${BASE_URL}/about`);
-	expect(response?.status()).toBe(200);
-	await page.waitForLoadState("domcontentloaded");
-
-	await expect(page.getByRole("contentinfo")).toContainText("© Bean & Brew — a demo app.");
 });

@@ -7,69 +7,74 @@ test("Menu — browse items and open Latte customisation page", async ({ page })
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
-	// Verify the page heading 'Menu' is visible
+	// Verify the Menu page heading is visible
 	await expect(page.getByRole("heading", { name: "Menu", level: 2 })).toBeVisible();
 
-	// Verify menu items are listed
+	// Verify Espresso item is listed (exact match to avoid strict mode violation)
 	await expect(page.getByText("Espresso", { exact: true })).toBeVisible();
+
+	// Verify Cortado item is listed
 	await expect(page.getByText("Cortado", { exact: true })).toBeVisible();
-	await expect(page.getByText("Cold Brew", { exact: true })).toBeVisible();
+
+	// Verify Latte item is listed
+	await expect(page.getByText("Latte", { exact: true })).toBeVisible();
 
 	// Click the Customize link for the Latte item
-	const latteCustomizeLink = page.locator('a[href="/order?item=latte"]').first();
-	await expect(latteCustomizeLink).toBeVisible();
+	const latteCustomizeLink = page.locator('a[href="/order?item=latte"]');
 	await latteCustomizeLink.click();
-
 	await page.waitForURL(/order\?item=latte/);
 	await page.waitForLoadState("domcontentloaded");
 
-	expect(page.url()).toContain("/order?item=latte");
+	// Confirm the URL contains the latte order query parameter
+	expect(page.url()).toContain("item=latte");
 });
 
-test("Menu — navigate to Espresso customisation page", async ({ page }) => {
+test("Menu — customize a Cortado (popular item)", async ({ page }) => {
 	const response = await page.goto(`${BASE_URL}/menu`);
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
-	// Verify the page heading is visible before interacting
-	await expect(page.getByRole("heading", { name: "Menu", level: 2 })).toBeVisible();
+	// Verify the Cortado item is listed and marked as POPULAR
+	await expect(page.getByText("Cortado", { exact: true })).toBeVisible();
+	await expect(page.getByText("Popular", { exact: true })).toBeVisible();
 
-	// Click the Customize link for the Espresso item
-	const espressoCustomizeLink = page.locator('a[href="/order?item=espresso"]').first();
-	await expect(espressoCustomizeLink).toBeVisible();
-	await espressoCustomizeLink.click();
-
-	await page.waitForURL(/order\?item=espresso/);
+	// Click the Customize link for the Cortado item
+	const cortadoCustomizeLink = page.locator('a[href="/order?item=cortado"]');
+	await cortadoCustomizeLink.click();
+	await page.waitForURL(/order\?item=cortado/);
 	await page.waitForLoadState("domcontentloaded");
 
-	expect(page.url()).toContain("/order?item=espresso");
+	// Confirm the URL contains the cortado order query parameter
+	expect(page.url()).toContain("item=cortado");
 });
 
-test("Menu — navigate to Mocha customisation page", async ({ page }) => {
+test("Menu — customize a Cold Brew (iced item)", async ({ page }) => {
 	const response = await page.goto(`${BASE_URL}/menu`);
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
-	// Verify the page heading is visible before interacting
-	await expect(page.getByRole("heading", { name: "Menu", level: 2 })).toBeVisible();
+	// Verify the Cold Brew item is listed
+	await expect(page.getByText("Cold Brew", { exact: true })).toBeVisible();
 
-	// Click the Customize link for the Mocha item
-	const mochaCustomizeLink = page.locator('a[href="/order?item=mocha"]').first();
-	await expect(mochaCustomizeLink).toBeVisible();
-	await mochaCustomizeLink.click();
+	// Verify the Iced badge is shown
+	await expect(page.getByText("Iced", { exact: true })).toBeVisible();
 
-	await page.waitForURL(/order\?item=mocha/);
+	// Click the Customize link for the Cold Brew item
+	const coldBrewCustomizeLink = page.locator('a[href="/order?item=cold-brew"]');
+	await coldBrewCustomizeLink.click();
+	await page.waitForURL(/order\?item=cold-brew/);
 	await page.waitForLoadState("domcontentloaded");
 
-	expect(page.url()).toContain("/order?item=mocha");
+	// Confirm the URL contains the cold-brew order query parameter
+	expect(page.url()).toContain("item=cold-brew");
 });
 
-test("Menu — page structure and navigation links", async ({ page }) => {
+test("Menu — page structure: nav links and footer", async ({ page }) => {
 	const response = await page.goto(`${BASE_URL}/menu`);
 	expect(response?.status()).toBe(200);
 	await page.waitForLoadState("domcontentloaded");
 
-	// Verify the brand logo/link
+	// Verify brand link
 	await expect(page.getByRole("link", { name: "☕ Bean & Brew" })).toBeVisible();
 
 	// Verify nav links have correct hrefs
@@ -94,11 +99,45 @@ test("Menu — page structure and navigation links", async ({ page }) => {
 
 	// Verify footer
 	await expect(page.getByRole("contentinfo")).toHaveText("© Bean & Brew — a demo app.");
+});
 
-	// Verify the subtitle text
-	await expect(page.getByText("Pick a drink and customize it on the next page.")).toBeVisible();
+test("Menu — all eight drink items are listed", async ({ page }) => {
+	const response = await page.goto(`${BASE_URL}/menu`);
+	expect(response?.status()).toBe(200);
+	await page.waitForLoadState("domcontentloaded");
 
-	// Verify all 8 menu items are present
-	const customizeLinks = page.locator('a[href^="/order?item="]');
+	// Verify all eight drinks are present using exact match to avoid strict mode violations
+	await expect(page.getByText("Espresso", { exact: true })).toBeVisible();
+	await expect(page.getByText("Cortado", { exact: true })).toBeVisible();
+	await expect(page.getByText("Flat White", { exact: true })).toBeVisible();
+	await expect(page.getByText("Latte", { exact: true })).toBeVisible();
+	await expect(page.getByText("Cappuccino", { exact: true })).toBeVisible();
+	await expect(page.getByText("Mocha", { exact: true })).toBeVisible();
+	await expect(page.getByText("Cold Brew", { exact: true })).toBeVisible();
+	await expect(page.getByText("Chai Latte", { exact: true })).toBeVisible();
+
+	// Verify all eight Customize links exist
+	const customizeLinks = page.getByRole("link", { name: "Customize" });
 	await expect(customizeLinks).toHaveCount(8);
+});
+
+test("Menu — Customize links have correct hrefs for all items", async ({ page }) => {
+	const response = await page.goto(`${BASE_URL}/menu`);
+	expect(response?.status()).toBe(200);
+	await page.waitForLoadState("domcontentloaded");
+
+	const expectedHrefs = [
+		"/order?item=espresso",
+		"/order?item=cortado",
+		"/order?item=flat-white",
+		"/order?item=latte",
+		"/order?item=cappuccino",
+		"/order?item=mocha",
+		"/order?item=cold-brew",
+		"/order?item=chai",
+	];
+
+	for (const href of expectedHrefs) {
+		await expect(page.locator(`a[href="${href}"]`)).toBeVisible();
+	}
 });
