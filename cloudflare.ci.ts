@@ -37,15 +37,17 @@ export class CI extends CIWorkflow {
 				})
 				.preview();
 			if (preview.worker === "coffee-shop") {
-				await step.testForge({
-					url: preview.url,
+				await step.testForgeRerun({
 					project: "my-coffee-shop",
+					runId: "4656045c-b15a-4c85-9f73-3c9e5a4b2ce1",
+					url: preview.url,
 				});
 			}
 			if (preview.worker === "coffee-shop") {
 				await step.delta({
 					project: "coffee-shop",
 					baselineBranch: p.defaultBranch,
+					failOnDiff: true,
 					catalog: [
 						{
 							id: "index",
@@ -74,6 +76,7 @@ export class CI extends CIWorkflow {
 		await step.delta({
 			project: "coffee-shop",
 			baselineBranch: p.defaultBranch,
+			failOnDiff: true,
 			catalog: [
 				{
 					id: "index",
@@ -86,7 +89,8 @@ export class CI extends CIWorkflow {
 
 		await step.testForgeRerun({
 			project: "my-coffee-shop",
-			runId: "38e8db76-336e-48d8-b42c-099f961d80c2",
+			runId: "4656045c-b15a-4c85-9f73-3c9e5a4b2ce1",
+			url: "https://coffee-shop.avenceslau.workers.dev",
 		});
 	}
 }

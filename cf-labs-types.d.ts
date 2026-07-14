@@ -77,6 +77,7 @@ declare module "@repo/ci" {
 	) & {
 		project?: string;
 		baselineBranch?: string;
+		failOnDiff?: boolean;
 		maxWaitSeconds?: number;
 	};
 	export type DeltaBuildStatus =
@@ -135,6 +136,7 @@ declare module "@repo/ci" {
 	export type TestForgeRerunOptions = {
 		project: string;
 		runId: string;
+		url: string;
 		maxWaitSeconds?: number;
 	};
 	export type CiCacheRunner = {
