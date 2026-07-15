@@ -36,15 +36,13 @@ export class CI extends CIWorkflow {
 					packageManager: "npm",
 				})
 				.preview();
-			if (preview.worker === "coffee-shop") {
-				await step.testForgeRerun({
+			await Promise.all([
+				step.testForgeRerun({
 					project: "my-coffee-shop",
 					runId: "4656045c-b15a-4c85-9f73-3c9e5a4b2ce1",
 					url: preview.url,
-				});
-			}
-			if (preview.worker === "coffee-shop") {
-				await step.delta({
+				}),
+				step.delta({
 					project: "coffee-shop",
 					baselineBranch: p.defaultBranch,
 					failOnDiff: true,
@@ -56,8 +54,8 @@ export class CI extends CIWorkflow {
 							url: preview.url,
 						},
 					],
-				});
-			}
+				}),
+			]);
 			return;
 		}
 
